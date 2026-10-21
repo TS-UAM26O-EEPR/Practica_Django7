@@ -1,3 +1,5 @@
+import logging
+
 from rest_framework import status, viewsets
 from rest_framework.decorators import action
 from rest_framework.exceptions import ValidationError
@@ -18,6 +20,18 @@ from gestion_productos.exceptions.productoExceptions import (
 from .serializers import ProductoCompletoSerializer, ProductoParcialSerializer
 
 
+logger = logging.getLogger('gestion_productos')
+logger_auditoria = logging.getLogger('auditoria')
+
+
+def obtener_ip(request):
+    """Extrae la IP real del cliente, considerando proxies."""
+    x_forwarded = request.META.get('HTTP_X_FORWARDED_FOR')
+    if x_forwarded:
+        return x_forwarded.split(',')[0].strip()
+    return request.META.get('REMOTE_ADDR', 'IP desconocida')
+
+
 class ProductoViewSet(viewsets.ViewSet):
     """API para la gestión de Productos."""
 
@@ -33,14 +47,19 @@ class ProductoViewSet(viewsets.ViewSet):
     def list(self, request, *args, **kwargs):
         """Devuelve una lista de todos los productos."""
         try:
+            logger.debug("Obteniendo lista de productos")
             productos = ProductoDAO.obtener_todos()
             serializer = ProductoCompletoSerializer(productos, many=True)
+            logger.info(f"Lista de productos obtenida exitosamente. Total: {len(productos)}")
             return Response(serializer.data, status=status.HTTP_200_OK)
         except ProductoNoAutorizado_401 as e:
+            logger.warning(f"Acceso no autorizado a la lista de productos: {str(e)}")
             return Response({"error": str(e)}, status=status.HTTP_401_UNAUTHORIZED)
         except ProductoProhibido_403 as e:
+            logger.warning(f"Acceso prohibido a la lista de productos: {str(e)}")
             return Response({"error": str(e)}, status=status.HTTP_403_FORBIDDEN)
         except ErrorInternoServidor_500 as e:
+            logger.error(f"Error interno al obtener la lista de productos: {str(e)}")
             return Response(
                 {"error": str(e)},
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR,
@@ -59,16 +78,22 @@ class ProductoViewSet(viewsets.ViewSet):
     def retrieve(self, request, pk=None):
         """Obtiene los detalles de un producto específico utilizando su ID."""
         try:
+            logger.debug(f"Obteniendo producto con ID: {pk}")
             producto = ProductoDAO.obtener_producto_por_id(pk)
             serializer = ProductoCompletoSerializer(producto)
+            logger.info(f"Producto con ID {pk} obtenido exitosamente")
             return Response(serializer.data, status=status.HTTP_200_OK)
         except ProductoNoAutorizado_401 as e:
+            logger.warning(f"Acceso no autorizado al obtener producto con ID {pk}: {str(e)}")
             return Response({"error": str(e)}, status=status.HTTP_401_UNAUTHORIZED)
         except ProductoProhibido_403 as e:
+            logger.warning(f"Acceso prohibido al obtener producto con ID {pk}: {str(e)}")
             return Response({"error": str(e)}, status=status.HTTP_403_FORBIDDEN)
         except ProductoNoEncontrado_404 as e:
+            logger.warning(f"Producto no encontrado con ID {pk}: {str(e)}")
             return Response({"error": str(e)}, status=status.HTTP_404_NOT_FOUND)
         except ErrorInternoServidor_500 as e:
+            logger.error(f"Error interno al obtener producto con ID {pk}: {str(e)}")
             return Response(
                 {"error": str(e)},
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR,
@@ -86,17 +111,27 @@ class ProductoViewSet(viewsets.ViewSet):
     )
     def create(self, request):
         """Crea un nuevo producto con la información proporcionada."""
+        ip = obtener_ip(request)
         try:
+            logger.debug(f"Intentando crear un nuevo producto con data: {request.data}")
             producto = ProductoDAO.crear_producto(**request.data)
+            logger_auditoria.info(
+                f"ip:{ip}] [accion: CREAR_PRODUCTO] "
+                f"[realizado_por:{request.user}] "
+                f"[product_key:{request.data.get('product_key')}]"
+            )
             return Response(
                 ProductoCompletoSerializer(producto).data,
                 status=status.HTTP_201_CREATED,
             )
         except DatosInvalidos_400 as e:
+            logger.warning(f"Error de validación al crear producto: {str(e)}")
             return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
         except ConflictoProducto_409 as e:
+            logger.warning(f"Conflicto al crear producto (product_key ya registrado): {str(e)}")
             return Response({"error": str(e)}, status=status.HTTP_409_CONFLICT)
         except ErrorInternoServidor_500 as e:
+            logger.error(f"Error interno al crear producto: {str(e)}")
             return Response(
                 {"error": str(e)},
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR,
@@ -115,19 +150,29 @@ class ProductoViewSet(viewsets.ViewSet):
     )
     def update(self, request, pk=None):
         """Actualiza completamente un producto especificado por su ID."""
+        ip = obtener_ip(request)
         try:
+            logger.debug(f"Intentando actualizar producto con ID {pk} y data: {request.data}")
             usuarioDTO = ProductoDAO.actualizar_producto(pk, **request.data)
+            logger_auditoria.info(
+                f"ip:{ip}] [accion: ACTUALIZAR_PRODUCTO] "
+                f"[realizado_por:{request.user}] [id_actualizado:{pk}]"
+            )
             return Response(
                 ProductoCompletoSerializer(usuarioDTO).data,
                 status=status.HTTP_200_OK,
             )
         except DatosInvalidos_400 as e:
+            logger.warning(f"Error de validación al actualizar producto con ID {pk}: {str(e)}")
             return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
         except ProductoNoEncontrado_404 as e:
+            logger.warning(f"Producto no encontrado para actualizar con ID {pk}: {str(e)}")
             return Response({"error": str(e)}, status=status.HTTP_404_NOT_FOUND)
         except ConflictoProducto_409 as e:
+            logger.warning(f"Conflicto al actualizar producto con ID {pk} (product_key ya registrado): {str(e)}")
             return Response({"error": str(e)}, status=status.HTTP_409_CONFLICT)
         except ErrorInternoServidor_500 as e:
+            logger.error(f"Error interno al actualizar producto con ID {pk}: {str(e)}")
             return Response(
                 {"error": str(e)},
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR,
@@ -146,19 +191,29 @@ class ProductoViewSet(viewsets.ViewSet):
     )
     def partial_update(self, request, pk=None):
         """Actualiza parcialmente un producto especificado por su ID."""
+        ip = obtener_ip(request)
         try:
+            logger.debug(f"Intentando actualizar producto parcialmente con ID {pk} y data: {request.data}")
             productoDTO = ProductoDAO.actualizar_producto_parcial(pk, **request.data)
+            logger_auditoria.info(
+                f"ip:{ip}] [accion: ACTUALIZAR_PRODUCTO_PARCIAL] "
+                f"[realizado_por:{request.user}] [id_actualizado:{pk}]"
+            )
             return Response(
                 ProductoParcialSerializer(productoDTO).data,
                 status=status.HTTP_200_OK,
             )
         except DatosInvalidos_400 as e:
+            logger.warning(f"Error de validación al actualizar producto parcialmente con ID {pk}: {str(e)}")
             return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
         except ProductoNoEncontrado_404 as e:
+            logger.warning(f"Producto no encontrado para actualizar parcialmente con ID {pk}: {str(e)}")
             return Response({"error": str(e)}, status=status.HTTP_404_NOT_FOUND)
         except ConflictoProducto_409 as e:
+            logger.warning(f"Conflicto al actualizar producto parcialmente con ID {pk} (product_key ya registrado): {str(e)}")
             return Response({"error": str(e)}, status=status.HTTP_409_CONFLICT)
         except ErrorInternoServidor_500 as e:
+            logger.error(f"Error interno al actualizar producto parcialmente con ID {pk}: {str(e)}")
             return Response(
                 {"error": str(e)},
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR,
@@ -175,15 +230,23 @@ class ProductoViewSet(viewsets.ViewSet):
     )
     def destroy(self, request, pk=None):
         """Marca el producto como eliminado sin borrarlo físicamente."""
+        ip = obtener_ip(request)
         try:
+            logger.debug(f"Intentando eliminar producto con ID {pk}")
             ProductoDAO.eliminar_producto(pk)
+            logger_auditoria.info(
+                f"ip:{ip}] [accion: ELIMINAR_PRODUCTO] "
+                f"[realizado_por:{request.user}] [id_eliminado:{pk}]"
+            )
             return Response(
                 {"mensaje": "Producto eliminado correctamente"},
                 status=status.HTTP_200_OK,
             )
         except ProductoNoEncontrado_404 as e:
+            logger.warning(f"Producto no encontrado para eliminar con ID {pk}: {str(e)}")
             return Response({"error": str(e)}, status=status.HTTP_404_NOT_FOUND)
         except ValueError as e:
+            logger.warning(f"Error de validación al intentar eliminar producto con ID {pk}: {str(e)}")
             return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
     @action(detail=True, methods=["patch"])
@@ -198,15 +261,23 @@ class ProductoViewSet(viewsets.ViewSet):
     )
     def restore(self, request, pk=None):
         """Restaura un producto que había sido marcado como eliminado lógicamente."""
+        ip = obtener_ip(request)
         try:
+            logger.debug(f"Intentando restaurar producto con ID {pk}")
             ProductoDAO.restaurar_producto(pk)
+            logger_auditoria.info(
+                f"ip:{ip}] [accion: RESTAURAR_PRODUCTO] "
+                f"[realizado_por:{request.user}] [id_restaurado:{pk}]"
+            )
             return Response(
                 {"mensaje": "Producto restaurado correctamente"},
                 status=status.HTTP_200_OK,
             )
         except ProductoNoEncontrado_404 as e:
+            logger.warning(f"Producto no encontrado para restaurar con ID {pk}: {str(e)}")
             return Response({"error": str(e)}, status=status.HTTP_404_NOT_FOUND)
         except ValidationError as e:
+            logger.warning(f"Error de validación al intentar restaurar producto con ID {pk}: {str(e)}")
             return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
     @action(detail=False, methods=["get"], url_path="search")
@@ -233,13 +304,16 @@ class ProductoViewSet(viewsets.ViewSet):
     def search(self, request):
         query = request.GET.get("q", "")
         if not query:
+            logger.warning("Consulta de búsqueda inválida: parámetro 'q' no proporcionado")
             return Response(
                 {"error": "Debe proporcionar un parámetro de búsqueda"},
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
+        logger.debug(f"Buscando productos con query: {query}")
         productos = ProductoDAO.buscar_productos(query)
         serializer = ProductoCompletoSerializer(productos, many=True)
+        logger.info(f"Búsqueda '{query}' devolvió {len(serializer.data)} resultados")
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     @action(detail=False, methods=["get"], url_path="filtrar-precio")
@@ -274,6 +348,9 @@ class ProductoViewSet(viewsets.ViewSet):
             precio_max = request.query_params.get("precio_max")
 
             if precio_min is None or precio_max is None:
+                logger.warning(
+                    "Parámetros de precio inválidos: precio_min o precio_max no proporcionados"
+                )
                 return Response(
                     {"error": "Debe proporcionar precio_min y precio_max"},
                     status=status.HTTP_400_BAD_REQUEST,
@@ -283,10 +360,15 @@ class ProductoViewSet(viewsets.ViewSet):
                 precio_min,
                 precio_max,
             )
+            logger.info(
+                f"Filtrado por precio entre {precio_min} y {precio_max} "
+                f"devolvió {len(productos)} productos"
+            )
             serializer = ProductoCompletoSerializer(productos, many=True)
             return Response(serializer.data, status=status.HTTP_200_OK)
 
         except (ValueError, TypeError, ValidationError) as e:
+            logger.error(f"Error inesperado al filtrar productos por precio: {str(e)}")
             return Response(
                 {"error": str(e)},
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR,
@@ -313,9 +395,15 @@ class ProductoViewSet(viewsets.ViewSet):
     )
     def update_image(self, request, pk=None):
         """Actualiza la URL de la imagen de un producto específico."""
+        ip = obtener_ip(request)
         try:
             img = request.GET.get("image_link", "")
+            logger.debug(f"Intentando actualizar imagen del producto con ID {pk} a URL: {img}")
             producto = ProductoDAO.actualizar_img(pk, img)
+            logger_auditoria.info(
+                f"ip:{ip}] [accion: ACTUALIZAR_IMAGEN_PRODUCTO] "
+                f"[realizado_por:{request.user}] [id_actualizado:{pk}]"
+            )
             data = {
                 "codigo": 200,
                 "mensaje": "Imagen del producto actualizada exitosamente.",
@@ -326,14 +414,16 @@ class ProductoViewSet(viewsets.ViewSet):
                 },
             }
             return Response(data, status=status.HTTP_200_OK)
-        except ProductoNoEncontrado_404:
+        except ProductoNoEncontrado_404 as e:
+            logger.warning(f"Producto no encontrado para actualizar imagen con ID {pk}: {str(e)}")
             data = {
                 "codigo": 404,
                 "mensaje": "Producto no encontrado.",
                 "resultado": "null",
             }
             return Response(data, status=status.HTTP_404_NOT_FOUND)
-        except ValidationError:
+        except ValidationError as e:
+            logger.warning(f"Error de validación al intentar actualizar imagen del producto con ID {pk}: {str(e)}")
             data = {
                 "codigo": 400,
                 "mensaje": "La URL de la imagen no es válida o excede el límite de caracteres.",
@@ -355,8 +445,14 @@ class ProductoViewSet(viewsets.ViewSet):
     )
     def deactivate(self, request, pk=None):
         """Desactiva un producto estableciendo el campo status en false."""
+        ip = obtener_ip(request)
         try:
+            logger.debug(f"Intentando desactivar producto con ID {pk}")
             producto = ProductoDAO.desactivar_producto(pk)
+            logger_auditoria.info(
+                f"ip:{ip}] [accion: DESACTIVAR_PRODUCTO] "
+                f"[realizado_por:{request.user}] [id_desactivado:{pk}]"
+            )
             data = {
                 "codigo": 200,
                 "mensaje": "Producto desactivado exitosamente.",
@@ -368,11 +464,13 @@ class ProductoViewSet(viewsets.ViewSet):
             }
             return Response(data, status=status.HTTP_200_OK)
         except ProductoNoEncontrado_404 as e:
+            logger.warning(f"Producto no encontrado para desactivar con ID {pk}: {str(e)}")
             return Response(
                 {"codigo": 404, "mensaje": str(e)},
                 status=status.HTTP_404_NOT_FOUND,
             )
         except ValidationError as e:
+            logger.warning(f"Error de validación al intentar desactivar producto con ID {pk}: {str(e)}")
             return Response(
                 {"codigo": 400, "mensaje": str(e)},
                 status=status.HTTP_400_BAD_REQUEST,
@@ -390,13 +488,21 @@ class ProductoViewSet(viewsets.ViewSet):
     )
     def activate(self, request, pk=None):
         """Activa un producto estableciendo el campo status en true."""
+        ip = obtener_ip(request)
         try:
+            logger.debug(f"Intentando activar producto con ID {pk}")
             ProductoDAO.activar_producto(pk)
+            logger_auditoria.info(
+                f"ip:{ip}] [accion: ACTIVAR_PRODUCTO] "
+                f"[realizado_por:{request.user}] [id_activado:{pk}]"
+            )
             return Response(
                 {"mensaje": "Producto activado correctamente"},
                 status=status.HTTP_200_OK,
             )
         except ProductoNoEncontrado_404 as e:
+            logger.warning(f"Producto no encontrado para activar con ID {pk}: {str(e)}")
             return Response({"error": str(e)}, status=status.HTTP_404_NOT_FOUND)
         except ValidationError as e:
+            logger.warning(f"Error de validación al intentar activar producto con ID {pk}: {str(e)}")
             return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)

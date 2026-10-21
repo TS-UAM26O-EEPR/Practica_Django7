@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/6.1/ref/settings/
 """
 
 from datetime import timedelta
+import os
 
 from decouple import config
 from pathlib import Path
@@ -114,6 +115,7 @@ SWAGGER_SETTINGS = {
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -121,6 +123,137 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
+
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:3000",
+    "http://localhost:4200",
+    "http://127.0.0.1:3000",
+]
+
+CORS_ALLOW_CREDENTIALS = True
+
+CORS_ALLOW_METHODS = [
+    "DELETE",
+    "GET",
+    "OPTIONS",
+    "PATCH",
+    "POST",
+    "PUT",
+]
+
+CORS_ALLOW_HEADERS = [
+    "accept",
+    "accept-encoding",
+    "authorization",
+    "content-type",
+    "dnt",
+    "origin",
+    "user-agent",
+    "x-csrftoken",
+    "x-requested-with",
+]
+
+LOGS_DIR = BASE_DIR / 'logs'
+os.makedirs(LOGS_DIR, exist_ok=True)
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'tecnico_detallado': {
+            'format': '[{asctime}] [{levelname}] [{name}] [{module}:{lineno}] {message}',
+            'style': '{',
+            'datefmt': '%Y-%m-%d %H:%M:%S',
+        },
+        'consola_simple': {
+            'format': '[{levelname}] {name}: {message}',
+            'style': '{',
+        },
+        'auditoria_formato': {
+            'format': '[{asctime}] [AUDITORIA] [Usuario: {message}]',
+            'style': '{',
+            'datefmt': '%Y-%m-%d %H:%M:%S',
+        },
+    },
+    'filters': {
+        'require_debug_true': {
+            '()': 'django.utils.log.RequireDebugTrue',
+        },
+    },
+    'handlers': {
+        'consola': {
+            'level': 'DEBUG',
+            'class': 'logging.StreamHandler',
+            'formatter': 'consola_simple',
+            'filters': ['require_debug_true'],
+        },
+        'archivo_tecnico': {
+            'level': 'WARNING',
+            'class': 'logging.handlers.RotatingFileHandler',
+            'filename': LOGS_DIR / 'tecnico.log',
+            'maxBytes': 1024 * 1024 * 5,
+            'backupCount': 5,
+            'formatter': 'tecnico_detallado',
+            'encoding': 'utf-8',
+        },
+        'archivo_debug': {
+            'level': 'DEBUG',
+            'class': 'logging.handlers.RotatingFileHandler',
+            'filename': LOGS_DIR / 'debug.log',
+            'maxBytes': 1024 * 1024 * 5,
+            'backupCount': 3,
+            'formatter': 'tecnico_detallado',
+            'encoding': 'utf-8',
+        },
+        'archivo_auditoria': {
+            'level': 'INFO',
+            'class': 'logging.handlers.RotatingFileHandler',
+            'filename': LOGS_DIR / 'auditoria.log',
+            'maxBytes': 1024 * 1024 * 10,
+            'backupCount': 10,
+            'formatter': 'auditoria_formato',
+            'encoding': 'utf-8',
+        },
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['consola', 'archivo_tecnico'],
+            'level': 'WARNING',
+            'propagate': False,
+        },
+        'django.request': {
+            'handlers': ['archivo_tecnico'],
+            'level': 'WARNING',
+            'propagate': False,
+        },
+        'django.db.backends': {
+            'handlers': ['archivo_debug'],
+            'level': 'DEBUG',
+            'propagate': False,
+            'filters': ['require_debug_true'],
+        },
+        'back_end_django': {
+            'handlers': ['consola', 'archivo_tecnico', 'archivo_debug'],
+            'level': 'DEBUG',
+            'propagate': False,
+        },
+        'gestion_usuarios': {
+            'handlers': ['consola', 'archivo_tecnico', 'archivo_debug'],
+            'level': 'DEBUG',
+            'propagate': False,
+        },
+        'gestion_productos': {
+            'handlers': ['consola', 'archivo_tecnico', 'archivo_debug'],
+            'level': 'DEBUG',
+            'propagate': False,
+        },
+        'auditoria': {
+            'handlers': ['archivo_auditoria', 'consola'],
+            'level': 'INFO',
+            'propagate': False,
+        },
+    },
+}
 
 ROOT_URLCONF = 'back_end_django.urls'
 

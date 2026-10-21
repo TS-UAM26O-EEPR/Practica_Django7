@@ -1,0 +1,8 @@
+Django
+djangorestframework
+django-filter
+django-cors-headers #esta es la parte que se agrego, si no la teniamos, la agregamos aqui como en installed apps en settings.py
+drf-yasg
+python-decouple
+psycopg2-binary
+djangorestframework-simplejwt

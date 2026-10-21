@@ -1,0 +1,188 @@
+[2026-10-21 00:55:10] [WARNING] [django.request] [log:283] Not Found: /favicon.ico
+[2026-10-21 00:55:10] [WARNING] [django.server] [log:283] "GET /favicon.ico HTTP/1.1" 404 3304
+[2026-10-21 01:20:02] [WARNING] [django.request] [log:283] Unauthorized: /api/usuarios/users/
+[2026-10-21 01:20:02] [WARNING] [django.server] [log:283] "POST /api/usuarios/users/ HTTP/1.1" 401 58
+[2026-10-21 01:30:27] [WARNING] [django.request] [log:283] Unauthorized: /api/auth/token/
+[2026-10-21 01:30:27] [WARNING] [django.request] [log:283] Bad Request: /api/auth/token/
+[2026-10-21 01:30:28] [WARNING] [django.request] [log:283] Unauthorized: /api/auth/token/
+[2026-10-21 01:30:29] [WARNING] [django.request] [log:283] Unauthorized: /api/auth/token/refresh/
+[2026-10-21 01:30:29] [WARNING] [django.request] [log:283] Unauthorized: /api/auth/logout/
+[2026-10-21 01:30:30] [WARNING] [django.request] [log:283] Not Found: /api/logs/auditoria/
+[2026-10-21 01:30:32] [WARNING] [django.request] [log:283] Not Found: /api/logs/auditoria/
+[2026-10-21 01:30:32] [WARNING] [django.request] [log:283] Not Found: /api/logs/auditoria/
+[2026-10-21 01:30:33] [WARNING] [django.request] [log:283] Unauthorized: /api/auth/token/refresh/
+[2026-10-21 01:30:35] [WARNING] [django.request] [log:283] Not Found: /api/products/
+[2026-10-21 01:30:36] [WARNING] [django.request] [log:283] Not Found: /api/products/
+[2026-10-21 01:30:36] [WARNING] [django.request] [log:283] Not Found: /api/products/
+[2026-10-21 01:30:38] [WARNING] [django.request] [log:283] Not Found: /api/products/
+[2026-10-21 01:30:39] [WARNING] [django.request] [log:283] Not Found: /api/products/
+[2026-10-21 01:30:39] [WARNING] [django.request] [log:283] Not Found: /api/products/
+[2026-10-21 01:30:40] [WARNING] [django.request] [log:283] Not Found: /api/users/
+[2026-10-21 01:30:41] [WARNING] [django.request] [log:283] Not Found: /api/users/
+[2026-10-21 01:30:42] [WARNING] [django.request] [log:283] Not Found: /api/users/
+[2026-10-21 01:30:42] [WARNING] [django.request] [log:283] Not Found: /api/users/
+[2026-10-21 01:30:43] [WARNING] [django.request] [log:283] Not Found: /api/users/
+[2026-10-21 01:30:43] [WARNING] [django.request] [log:283] Not Found: /api/users/
+[2026-10-21 01:30:45] [WARNING] [django.request] [log:283] Unauthorized: /api/auth/token/
+[2026-10-21 01:31:57] [WARNING] [django.request] [log:283] Unauthorized: /api/auth/token/
+[2026-10-21 01:31:58] [WARNING] [django.request] [log:283] Bad Request: /api/auth/token/
+[2026-10-21 01:31:58] [WARNING] [django.request] [log:283] Unauthorized: /api/auth/token/
+[2026-10-21 01:32:00] [WARNING] [django.request] [log:283] Unauthorized: /api/auth/token/refresh/
+[2026-10-21 01:32:00] [WARNING] [django.request] [log:283] Unauthorized: /api/auth/logout/
+[2026-10-21 01:32:01] [WARNING] [django.request] [log:283] Not Found: /api/logs/auditoria/
+[2026-10-21 01:32:03] [WARNING] [django.request] [log:283] Not Found: /api/logs/auditoria/
+[2026-10-21 01:32:03] [WARNING] [django.request] [log:283] Not Found: /api/logs/auditoria/
+[2026-10-21 01:32:03] [WARNING] [django.request] [log:283] Unauthorized: /api/auth/token/refresh/
+[2026-10-21 01:32:06] [WARNING] [django.request] [log:283] Not Found: /api/users/
+[2026-10-21 01:32:07] [WARNING] [django.request] [log:283] Not Found: /api/users/
+[2026-10-21 01:32:07] [WARNING] [django.request] [log:283] Not Found: /api/users/
+[2026-10-21 01:32:07] [WARNING] [django.request] [log:283] Not Found: /api/users/
+[2026-10-21 01:32:08] [WARNING] [django.request] [log:283] Not Found: /api/users/
+[2026-10-21 01:32:09] [WARNING] [django.request] [log:283] Not Found: /api/users/
+[2026-10-21 01:32:11] [WARNING] [django.request] [log:283] Unauthorized: /api/auth/token/
+[2026-10-21 01:32:12] [WARNING] [django.request] [log:283] Not Found: /api/products/
+[2026-10-21 01:32:13] [WARNING] [django.request] [log:283] Not Found: /api/products/
+[2026-10-21 01:32:13] [WARNING] [django.request] [log:283] Not Found: /api/products/
+[2026-10-21 01:32:14] [WARNING] [django.request] [log:283] Not Found: /api/products/
+[2026-10-21 01:32:16] [WARNING] [django.request] [log:283] Not Found: /api/products/
+[2026-10-21 01:32:16] [WARNING] [django.request] [log:283] Not Found: /api/products/
+[2026-10-21 01:33:16] [WARNING] [django.request] [log:283] Unauthorized: /api/auth/token/
+[2026-10-21 01:33:17] [WARNING] [django.request] [log:283] Bad Request: /api/auth/token/
+[2026-10-21 01:33:18] [WARNING] [django.request] [log:283] Unauthorized: /api/auth/token/
+[2026-10-21 01:33:19] [WARNING] [django.request] [log:283] Unauthorized: /api/auth/token/refresh/
+[2026-10-21 01:33:19] [WARNING] [django.request] [log:283] Unauthorized: /api/auth/logout/
+[2026-10-21 01:33:20] [WARNING] [django.request] [log:283] Not Found: /api/logs/auditoria/
+[2026-10-21 01:33:22] [WARNING] [django.request] [log:283] Not Found: /api/logs/auditoria/
+[2026-10-21 01:33:22] [WARNING] [django.request] [log:283] Not Found: /api/logs/auditoria/
+[2026-10-21 01:33:22] [WARNING] [django.request] [log:283] Unauthorized: /api/auth/token/refresh/
+[2026-10-21 01:33:25] [WARNING] [django.request] [log:283] Not Found: /api/products/
+[2026-10-21 01:33:26] [WARNING] [django.request] [log:283] Not Found: /api/products/
+[2026-10-21 01:33:26] [WARNING] [django.request] [log:283] Not Found: /api/products/
+[2026-10-21 01:33:27] [WARNING] [django.request] [log:283] Not Found: /api/products/
+[2026-10-21 01:33:28] [WARNING] [django.request] [log:283] Not Found: /api/products/
+[2026-10-21 01:33:29] [WARNING] [django.request] [log:283] Not Found: /api/products/
+[2026-10-21 01:33:30] [WARNING] [django.request] [log:283] Not Found: /api/users/
+[2026-10-21 01:33:31] [WARNING] [django.request] [log:283] Not Found: /api/users/
+[2026-10-21 01:33:31] [WARNING] [django.request] [log:283] Not Found: /api/users/
+[2026-10-21 01:33:32] [WARNING] [django.request] [log:283] Not Found: /api/users/
+[2026-10-21 01:33:33] [WARNING] [django.request] [log:283] Not Found: /api/users/
+[2026-10-21 01:33:33] [WARNING] [django.request] [log:283] Not Found: /api/users/
+[2026-10-21 01:33:35] [WARNING] [django.request] [log:283] Unauthorized: /api/auth/token/
+[2026-10-21 01:34:03] [WARNING] [django.request] [log:283] Unauthorized: /api/auth/token/
+[2026-10-21 01:34:03] [WARNING] [django.request] [log:283] Bad Request: /api/auth/token/
+[2026-10-21 01:34:04] [WARNING] [django.request] [log:283] Unauthorized: /api/auth/token/
+[2026-10-21 01:34:05] [WARNING] [django.request] [log:283] Unauthorized: /api/auth/token/refresh/
+[2026-10-21 01:34:05] [WARNING] [django.request] [log:283] Unauthorized: /api/auth/logout/
+[2026-10-21 01:34:07] [WARNING] [django.request] [log:283] Not Found: /api/logs/auditoria/
+[2026-10-21 01:34:08] [WARNING] [django.request] [log:283] Not Found: /api/logs/auditoria/
+[2026-10-21 01:34:08] [WARNING] [django.request] [log:283] Not Found: /api/logs/auditoria/
+[2026-10-21 01:34:09] [WARNING] [django.request] [log:283] Unauthorized: /api/auth/token/refresh/
+[2026-10-21 01:34:11] [WARNING] [django.request] [log:283] Not Found: /api/users/
+[2026-10-21 01:34:12] [WARNING] [django.request] [log:283] Not Found: /api/users/
+[2026-10-21 01:34:12] [WARNING] [django.request] [log:283] Not Found: /api/users/
+[2026-10-21 01:34:13] [WARNING] [django.request] [log:283] Not Found: /api/users/
+[2026-10-21 01:34:14] [WARNING] [django.request] [log:283] Not Found: /api/users/
+[2026-10-21 01:34:14] [WARNING] [django.request] [log:283] Not Found: /api/users/
+[2026-10-21 01:34:16] [WARNING] [django.request] [log:283] Unauthorized: /api/auth/token/
+[2026-10-21 01:34:17] [WARNING] [django.request] [log:283] Not Found: /api/products/
+[2026-10-21 01:34:18] [WARNING] [django.request] [log:283] Not Found: /api/products/
+[2026-10-21 01:34:19] [WARNING] [django.request] [log:283] Not Found: /api/products/
+[2026-10-21 01:34:20] [WARNING] [django.request] [log:283] Not Found: /api/products/
+[2026-10-21 01:34:21] [WARNING] [django.request] [log:283] Not Found: /api/products/
+[2026-10-21 01:34:21] [WARNING] [django.request] [log:283] Not Found: /api/products/
+[2026-10-21 01:34:51] [WARNING] [django.request] [log:283] Unauthorized: /api/auth/token/
+[2026-10-21 01:34:52] [WARNING] [django.request] [log:283] Bad Request: /api/auth/token/
+[2026-10-21 01:34:52] [WARNING] [django.request] [log:283] Unauthorized: /api/auth/token/
+[2026-10-21 01:34:53] [WARNING] [django.request] [log:283] Unauthorized: /api/auth/token/refresh/
+[2026-10-21 01:34:54] [WARNING] [django.request] [log:283] Unauthorized: /api/auth/logout/
+[2026-10-21 01:34:55] [WARNING] [django.request] [log:283] Not Found: /api/logs/auditoria/
+[2026-10-21 01:34:56] [WARNING] [django.request] [log:283] Not Found: /api/logs/auditoria/
+[2026-10-21 01:34:57] [WARNING] [django.request] [log:283] Not Found: /api/logs/auditoria/
+[2026-10-21 01:34:57] [WARNING] [django.request] [log:283] Unauthorized: /api/auth/token/refresh/
+[2026-10-21 01:35:00] [WARNING] [django.request] [log:283] Not Found: /api/products/
+[2026-10-21 01:35:01] [WARNING] [django.request] [log:283] Not Found: /api/products/
+[2026-10-21 01:35:01] [WARNING] [django.request] [log:283] Not Found: /api/products/
+[2026-10-21 01:35:02] [WARNING] [django.request] [log:283] Not Found: /api/products/
+[2026-10-21 01:35:03] [WARNING] [django.request] [log:283] Not Found: /api/products/
+[2026-10-21 01:35:04] [WARNING] [django.request] [log:283] Not Found: /api/products/
+[2026-10-21 01:35:05] [WARNING] [django.request] [log:283] Not Found: /api/users/
+[2026-10-21 01:35:06] [WARNING] [django.request] [log:283] Not Found: /api/users/
+[2026-10-21 01:35:06] [WARNING] [django.request] [log:283] Not Found: /api/users/
+[2026-10-21 01:35:07] [WARNING] [django.request] [log:283] Not Found: /api/users/
+[2026-10-21 01:35:08] [WARNING] [django.request] [log:283] Not Found: /api/users/
+[2026-10-21 01:35:08] [WARNING] [django.request] [log:283] Not Found: /api/users/
+[2026-10-21 01:35:10] [WARNING] [django.request] [log:283] Unauthorized: /api/auth/token/
+[2026-10-21 01:38:54] [WARNING] [django.request] [log:283] Unauthorized: /api/auth/token/
+[2026-10-21 01:38:54] [WARNING] [django.request] [log:283] Bad Request: /api/auth/token/
+[2026-10-21 01:38:55] [WARNING] [django.request] [log:283] Unauthorized: /api/auth/token/
+[2026-10-21 01:38:56] [WARNING] [django.request] [log:283] Unauthorized: /api/auth/token/refresh/
+[2026-10-21 01:38:57] [WARNING] [django.request] [log:283] Unauthorized: /api/auth/logout/
+[2026-10-21 01:38:58] [WARNING] [django.request] [log:283] Not Found: /api/logs/auditoria/
+[2026-10-21 01:38:59] [WARNING] [django.request] [log:283] Not Found: /api/logs/auditoria/
+[2026-10-21 01:39:00] [WARNING] [django.request] [log:283] Not Found: /api/logs/auditoria/
+[2026-10-21 01:39:00] [WARNING] [django.request] [log:283] Unauthorized: /api/auth/token/refresh/
+[2026-10-21 01:39:03] [WARNING] [django.request] [log:283] Not Found: /api/products/
+[2026-10-21 01:39:04] [WARNING] [django.request] [log:283] Not Found: /api/products/
+[2026-10-21 01:39:04] [WARNING] [django.request] [log:283] Not Found: /api/products/
+[2026-10-21 01:39:05] [WARNING] [django.request] [log:283] Not Found: /api/products/
+[2026-10-21 01:39:07] [WARNING] [django.request] [log:283] Not Found: /api/products/
+[2026-10-21 01:39:07] [WARNING] [django.request] [log:283] Not Found: /api/products/
+[2026-10-21 01:39:08] [WARNING] [django.request] [log:283] Not Found: /api/users/
+[2026-10-21 01:39:10] [WARNING] [django.request] [log:283] Not Found: /api/users/
+[2026-10-21 01:39:10] [WARNING] [django.request] [log:283] Not Found: /api/users/
+[2026-10-21 01:39:10] [WARNING] [django.request] [log:283] Not Found: /api/users/
+[2026-10-21 01:39:12] [WARNING] [django.request] [log:283] Not Found: /api/users/
+[2026-10-21 01:39:12] [WARNING] [django.request] [log:283] Not Found: /api/users/
+[2026-10-21 01:39:14] [WARNING] [django.request] [log:283] Unauthorized: /api/auth/token/
+[2026-10-21 01:40:39] [WARNING] [django.request] [log:283] Unauthorized: /api/auth/token/
+[2026-10-21 01:40:39] [WARNING] [django.request] [log:283] Bad Request: /api/auth/token/
+[2026-10-21 01:40:40] [WARNING] [django.request] [log:283] Unauthorized: /api/auth/token/
+[2026-10-21 01:40:41] [WARNING] [django.request] [log:283] Unauthorized: /api/auth/token/refresh/
+[2026-10-21 01:40:42] [WARNING] [django.request] [log:283] Unauthorized: /api/auth/logout/
+[2026-10-21 01:40:45] [WARNING] [django.request] [log:283] Forbidden: /api/auth/logs/auditoria/
+[2026-10-21 01:40:45] [WARNING] [django.request] [log:283] Unauthorized: /api/auth/logs/auditoria/
+[2026-10-21 01:40:45] [WARNING] [django.request] [log:283] Unauthorized: /api/auth/token/refresh/
+[2026-10-21 01:40:50] [WARNING] [django.request] [log:283] Unauthorized: /api/productos/products/
+[2026-10-21 01:40:53] [WARNING] [django.request] [log:283] Unauthorized: /api/productos/products/
+[2026-10-21 01:40:57] [WARNING] [django.request] [log:283] Unauthorized: /api/usuarios/users/
+[2026-10-21 01:40:57] [WARNING] [django.request] [log:283] Unauthorized: /api/usuarios/users/
+[2026-10-21 01:40:59] [WARNING] [django.request] [log:283] Unauthorized: /api/usuarios/users/
+[2026-10-21 01:41:01] [WARNING] [django.request] [log:283] Unauthorized: /api/auth/token/
+[2026-10-21 01:42:29] [WARNING] [django.request] [log:283] Unauthorized: /api/auth/token/
+[2026-10-21 01:42:29] [WARNING] [django.request] [log:283] Bad Request: /api/auth/token/
+[2026-10-21 01:42:29] [WARNING] [django.request] [log:283] Unauthorized: /api/auth/token/
+[2026-10-21 01:42:30] [WARNING] [django.request] [log:283] Unauthorized: /api/auth/token/refresh/
+[2026-10-21 01:42:30] [WARNING] [django.request] [log:283] Unauthorized: /api/auth/logout/
+[2026-10-21 01:42:32] [WARNING] [django.request] [log:283] Forbidden: /api/auth/logs/auditoria/
+[2026-10-21 01:42:32] [WARNING] [django.request] [log:283] Unauthorized: /api/auth/logs/auditoria/
+[2026-10-21 01:42:32] [WARNING] [django.request] [log:283] Unauthorized: /api/auth/token/refresh/
+[2026-10-21 01:42:34] [WARNING] [django.request] [log:283] Unauthorized: /api/productos/products/
+[2026-10-21 01:42:36] [WARNING] [django.request] [log:283] Unauthorized: /api/productos/products/
+[2026-10-21 01:42:38] [WARNING] [django.request] [log:283] Unauthorized: /api/usuarios/users/
+[2026-10-21 01:42:38] [WARNING] [django.request] [log:283] Unauthorized: /api/usuarios/users/
+[2026-10-21 01:42:39] [WARNING] [django.request] [log:283] Unauthorized: /api/usuarios/users/
+[2026-10-21 01:42:40] [WARNING] [django.request] [log:283] Unauthorized: /api/auth/token/
+[2026-10-21 01:44:36] [WARNING] [django.request] [log:283] Unauthorized: /api/auth/token/
+[2026-10-21 01:44:36] [WARNING] [django.request] [log:283] Bad Request: /api/auth/token/
+[2026-10-21 01:44:36] [WARNING] [django.request] [log:283] Unauthorized: /api/auth/token/
+[2026-10-21 01:44:37] [WARNING] [django.request] [log:283] Unauthorized: /api/auth/token/refresh/
+[2026-10-21 01:44:37] [WARNING] [django.request] [log:283] Unauthorized: /api/auth/logout/
+[2026-10-21 01:44:39] [WARNING] [django.request] [log:283] Forbidden: /api/auth/logs/auditoria/
+[2026-10-21 01:44:39] [WARNING] [django.request] [log:283] Unauthorized: /api/auth/logs/auditoria/
+[2026-10-21 01:44:39] [WARNING] [django.request] [log:283] Unauthorized: /api/auth/token/refresh/
+[2026-10-21 01:45:00] [WARNING] [django.request] [log:283] Unauthorized: /api/usuarios/users/
+[2026-10-21 01:45:00] [WARNING] [django.request] [log:283] Unauthorized: /api/usuarios/users/
+[2026-10-21 01:45:01] [WARNING] [django.request] [log:283] Unauthorized: /api/usuarios/users/
+[2026-10-21 01:45:02] [WARNING] [django.request] [log:283] Unauthorized: /api/auth/token/
+[2026-10-21 01:45:17] [WARNING] [django.request] [log:283] Unauthorized: /api/productos/products/
+[2026-10-21 01:45:19] [WARNING] [django.request] [log:283] Unauthorized: /api/productos/products/
+[2026-10-21 01:49:40] [WARNING] [django.request] [log:283] Unauthorized: /api/usuarios/users/
+[2026-10-21 01:49:40] [WARNING] [django.server] [log:283] "POST /api/usuarios/users/ HTTP/1.1" 401 58
+[2026-10-21 01:51:53] [WARNING] [django.request] [log:283] Unauthorized: /api/usuarios/users/
+[2026-10-21 01:51:53] [WARNING] [django.server] [log:283] "POST /api/usuarios/users/ HTTP/1.1" 401 58
+[2026-10-21 01:55:02] [WARNING] [django.request] [log:283] Unauthorized: /api/usuarios/users/
+[2026-10-21 01:55:02] [WARNING] [django.server] [log:283] "POST /api/usuarios/users/ HTTP/1.1" 401 58
+[2026-10-21 01:55:08] [WARNING] [django.request] [log:283] Unauthorized: /api/usuarios/users/
+[2026-10-21 01:55:08] [WARNING] [django.server] [log:283] "POST /api/usuarios/users/ HTTP/1.1" 401 58
+[2026-10-21 01:56:02] [WARNING] [django.request] [log:283] Unauthorized: /api/usuarios/users/
+[2026-10-21 01:56:02] [WARNING] [django.server] [log:283] "POST /api/usuarios/users/ HTTP/1.1" 401 58

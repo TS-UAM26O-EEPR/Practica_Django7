@@ -36,8 +36,8 @@ schema_view = get_schema_view(
 )
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('api/', include('gestion_usuarios.urls')), #Aunque si bien agregamos esta linea se comentara para que al ejecutar la primer migración ver que todo funcione correcatamente.
-    path('api/', include('gestion_productos.urls')),
+    path('api/usuarios/', include('gestion_usuarios.urls')),
+    path('api/productos/', include('gestion_productos.urls')),
     path('api/auth/', include('autentificacion.urls')),
     re_path(r'^swagger(?P<format>\.json|\.yaml)$', schema_view.without_ui(cache_timeout=0), name='schema-json'),
     path('swagger/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),

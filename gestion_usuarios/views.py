@@ -1,3 +1,5 @@
+import logging
+
 from rest_framework import viewsets, status
 from rest_framework.response import Response
 from rest_framework.decorators import action
@@ -18,6 +20,19 @@ from gestion_usuarios.exceptions.usuarioExceptions import (
     ConflictoUsuario_409,
 )
 
+
+logger = logging.getLogger('gestion_usuarios')
+logger_auditoria = logging.getLogger('auditoria')
+
+
+def obtener_ip(request):
+    """Extrae la IP real del cliente, considerando proxies."""
+    x_forwarded = request.META.get('HTTP_X_FORWARDED_FOR')
+    if x_forwarded:
+        return x_forwarded.split(',')[0].strip()
+    return request.META.get('REMOTE_ADDR', 'IP desconocida')
+
+
 class UsuarioViewSet(viewsets.ViewSet):
     """API para la gestión de Usuarios."""
 
@@ -37,14 +52,19 @@ class UsuarioViewSet(viewsets.ViewSet):
         de la tabla.
         """
         try:
+            logger.debug("Solicitud para obtener todos los usuarios")
             usuarios = UsuarioDAO.obtener_todos()
             serializer = UsuarioCompletoSerializer(usuarios, many=True)
+            logger.info(f"Lista de usuarios devuelta exitosamente. Total: {len(usuarios)}")
             return Response(serializer.data, status=status.HTTP_200_OK)
         except UsuarioNoAutorizado_401 as e:
+            logger.warning(f"Intento no autorizado de obtener usuarios: {str(e)}")
             return Response({"error": str(e)}, status=status.HTTP_401_UNAUTHORIZED)
         except UsuarioProhibido_403 as e:
+            logger.warning(f"Intento prohibido de obtener usuarios: {str(e)}")
             return Response({"error": str(e)}, status=status.HTTP_403_FORBIDDEN)
         except ErrorInternoServidor_500 as e:
+            logger.error(f"Error interno del servidor: {str(e)}")
             return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     @action(detail=True, methods=["patch"])
@@ -59,8 +79,14 @@ class UsuarioViewSet(viewsets.ViewSet):
     )
     def activate(self, request, pk=None):
         """Activa un usuario estableciendo el campo is_active en true."""
+        ip = obtener_ip(request)
         try:
+            logger.info(f"Usuario activado correctamente. IP: {ip}")
             usuario = UsuarioDAO.activar_usuario(pk)
+            logger_auditoria.info(
+                f"ip:{ip}] [accion: ACTIVAR_USUARIO] "
+                f"[realizado_por:{request.user}] [id_afectado:{pk}]"
+            )
             return Response(
                 {
                     "mensaje": "Usuario activado correctamente",
@@ -70,9 +96,11 @@ class UsuarioViewSet(viewsets.ViewSet):
             )
 
         except UsuarioNoEncontrado_404 as e:
+            logger.warning(f"Intento de activar usuario no encontrado: {str(e)}")
             return Response({"error": str(e)}, status=status.HTTP_404_NOT_FOUND)
 
         except DatosInvalidos_400 as e:
+            logger.warning(f"Intento de activar usuario con datos inválidos: {str(e)}")
             return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST) 
 
     @swagger_auto_schema(
@@ -88,20 +116,26 @@ class UsuarioViewSet(viewsets.ViewSet):
     def retrieve(self, request, pk=None):
         """Devuelve un usuario específico si existe."""
         try:
+            logger.debug(f"Solicitud para obtener usuario con ID: {pk}")
             usuario = UsuarioDAO.obtener_usuario_por_id(pk)
             serializer = UsuarioCompletoSerializer(usuario)
+            logger.info(f"Usuario con ID {pk} devuelto exitosamente")
             return Response(serializer.data, status=status.HTTP_200_OK)
 
         except UsuarioNoAutorizado_401 as e:
+            logger.warning(f"Intento no autorizado de obtener usuario con ID: {pk}: {str(e)}")
             return Response({"error": str(e)}, status=status.HTTP_401_UNAUTHORIZED)
 
         except UsuarioProhibido_403 as e:
+            logger.warning(f"Intento prohibido de obtener usuario con ID: {pk}: {str(e)}")
             return Response({"error": str(e)}, status=status.HTTP_403_FORBIDDEN)
 
         except UsuarioNoEncontrado_404 as e:
+            logger.warning(f"Intento de obtener usuario no encontrado con ID: {pk}: {str(e)}")
             return Response({"error": str(e)}, status=status.HTTP_404_NOT_FOUND)
 
         except ErrorInternoServidor_500 as e:
+            logger.error(f"Error interno del servidor: {str(e)}")
             return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     @swagger_auto_schema(
@@ -116,20 +150,30 @@ class UsuarioViewSet(viewsets.ViewSet):
     )
     def create(self, request):
         """Crea un nuevo usuario con la información proporcionada en el cuerpo de la petición."""
+        ip = obtener_ip(request)
         try:
+            logger.debug(f"Intentando crear usuario: {request.data.get('username')}")
             usuario_dto = UsuarioDAO.crear_usuario(**request.data)
+            logger_auditoria.info(
+                f"ip:{ip}] [accion: CREAR_USUARIO] "
+                f"[realizado_por:{request.user}] "
+                f"[nuevo_usuario:{request.data.get('username')}]"
+            )
             return Response(
                 UsuarioCompletoSerializer(usuario_dto).data,
                 status=status.HTTP_201_CREATED,
             )
 
         except DatosInvalidos_400 as e:
+            logger.warning(f"Error de validación al crear usuario: {str(e)}")
             return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
         except ConflictoUsuario_409 as e:
+            logger.warning(f"Conflicto al crear usuario: {str(e)}")
             return Response({"error": str(e)}, status=status.HTTP_409_CONFLICT)
 
         except ErrorInternoServidor_500 as e:
+            logger.error(f"Error interno del servidor: {str(e)}")
             return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     @swagger_auto_schema(
@@ -145,23 +189,33 @@ class UsuarioViewSet(viewsets.ViewSet):
     )
     def update(self, request, pk=None):
         """Actualiza completamente un usuario especificado por su id"""
+        ip = obtener_ip(request)
         try:
+            logger.debug(f"Intentando actualizar usuario con ID: {pk}")
             usuarioDTO = UsuarioDAO.actualizar_usuario(pk, **request.data)
+            logger_auditoria.info(
+                f"ip:{ip}] [accion: ACTUALIZAR_USUARIO] "
+                f"[realizado_por:{request.user}] [id_afectado:{pk}]"
+            )
             return Response(
                 UsuarioCompletoSerializer(usuarioDTO).data,
                 status=status.HTTP_200_OK,
             )
 
         except DatosInvalidos_400 as e:
+            logger.warning(f"Error de validación al actualizar usuario con ID {pk}: {str(e)}")
             return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
         except UsuarioNoEncontrado_404 as e:
+            logger.warning(f"Usuario no encontrado con ID {pk}: {str(e)}")
             return Response({"error": str(e)}, status=status.HTTP_404_NOT_FOUND)
 
         except ConflictoUsuario_409 as e:
+            logger.warning(f"Conflicto al actualizar usuario con ID {pk}: {str(e)}")
             return Response({"error": str(e)}, status=status.HTTP_409_CONFLICT)
 
         except ErrorInternoServidor_500 as e:
+            logger.error(f"Error interno del servidor al actualizar usuario con ID {pk}: {str(e)}")
             return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     @swagger_auto_schema(
@@ -175,17 +229,25 @@ class UsuarioViewSet(viewsets.ViewSet):
     )
     def destroy(self, request, pk=None):
         """Marca el usuario como eliminado sin borrarlo físicamente de la base de datos. Esto se realiza actualizando los campos is_deleted y deleted_at."""
+        ip = obtener_ip(request)
         try:
+            logger.debug(f"Intentando eliminar usuario con ID: {pk}")
             UsuarioDAO.eliminar_usuario(pk)
+            logger_auditoria.info(
+                f"ip:{ip}] [accion: ELIMINAR_USUARIO] "
+                f"[realizado_por:{request.user}] [id_afectado:{pk}]"
+            )
             return Response(
                 {"mensaje": "Usuario eliminado correctamente"},
                 status=status.HTTP_200_OK,
             )
 
         except UsuarioNoEncontrado_404 as e:
+            logger.warning(f"Usuario no encontrado con ID {pk}: {str(e)}")
             return Response({"error": str(e)}, status=status.HTTP_404_NOT_FOUND)
 
         except ValueError as e:
+            logger.warning(f"Error de validación al eliminar usuario con ID {pk}: {str(e)}")
             return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
     @swagger_auto_schema(
@@ -201,23 +263,33 @@ class UsuarioViewSet(viewsets.ViewSet):
     )
     def partial_update(self, request, pk=None):
         """Actualiza parcialmente un usuario especificado por su id. Solo se actualizan los campos proporcionados en el cuerpo de la petición."""
+        ip = obtener_ip(request)
         try:
+            logger.debug(f"Intentando actualizar usuario con ID: {pk}")
             usuarioDTO = UsuarioDAO.actualizar_usuario_parcial(pk, **request.data)
+            logger_auditoria.info(
+                f"ip:{ip}] [accion: ACTUALIZAR_USUARIO] "
+                f"[realizado_por:{request.user}] [id_afectado:{pk}]"
+            )
             return Response(
                 UsuarioParcialSerializer(usuarioDTO).data,
                 status=status.HTTP_200_OK,
             )
 
         except DatosInvalidos_400 as e:
+            logger.warning(f"Error de validación al actualizar usuario con ID {pk}: {str(e)}")
             return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
         except UsuarioNoEncontrado_404 as e:
+            logger.warning(f"Usuario no encontrado con ID {pk}: {str(e)}")
             return Response({"error": str(e)}, status=status.HTTP_404_NOT_FOUND)
 
         except ConflictoUsuario_409 as e:
+            logger.warning(f"Conflicto al actualizar usuario con ID {pk}: {str(e)}")
             return Response({"error": str(e)}, status=status.HTTP_409_CONFLICT)
 
         except ErrorInternoServidor_500 as e:
+            logger.error(f"Error interno del servidor al actualizar usuario con ID {pk}: {str(e)}")
             return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     @action(detail=True, methods=["patch"])
@@ -232,17 +304,25 @@ class UsuarioViewSet(viewsets.ViewSet):
     )
     def restore(self, request, pk=None):
         """Restaura un usuario que había sido marcado como eliminado lógicamente. Esto se realiza actualizando los campos is_deleted y deleted_at."""
+        ip = obtener_ip(request)
         try:
+            logger.debug(f"Intentando restaurar usuario con ID: {pk}")
             usuario = UsuarioDAO.restaurar_usuario(pk)
+            logger_auditoria.info(
+                f"ip:{ip}] [accion: RESTAURAR_USUARIO] "
+                f"[realizado_por:{request.user}] [id_afectado:{pk}]"
+            )
             return Response(
                 {"mensaje": "Usuario restaurado correctamente"},
                 status=status.HTTP_200_OK,
             )
 
         except UsuarioNoEncontrado_404 as e:
+            logger.warning(f"Usuario no encontrado con ID {pk}: {str(e)}")
             return Response({"error": str(e)}, status=status.HTTP_404_NOT_FOUND)
 
         except ValueError as e:
+            logger.warning(f"Error de validación al restaurar usuario con ID {pk}: {str(e)}")
             return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
     @action(detail=True, methods=["post"])
@@ -259,20 +339,29 @@ class UsuarioViewSet(viewsets.ViewSet):
     )
     def verify_email(self, request, pk=None):
         """Marca el email de un usuario como verificado y actualiza la fecha de verificación en el campo email_verified_at."""
+        ip = obtener_ip(request)
         try:
+            logger.debug(f"Intentando verificar email del usuario con ID: {pk}")
             UsuarioDAO.verificar_email(pk)
+            logger_auditoria.info(
+                f"ip:{ip}] [accion: VERIFICAR_EMAIL] "
+                f"[realizado_por:{request.user}] [id_afectado:{pk}]"
+            )
             return Response(
                 {"mensaje": "Email verificado exitosamente"},
                 status=status.HTTP_200_OK,
             )
 
         except UsuarioNoEncontrado_404 as e:
+            logger.warning(f"Usuario no encontrado con ID {pk}: {str(e)}")
             return Response({"error": str(e)}, status=status.HTTP_404_NOT_FOUND)
 
         except ValueError as e:
+            logger.warning(f"Email ya verificado para usuario con ID {pk}: {str(e)}")
             return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
         except Exception as e:
+            logger.error(f"Error interno del servidor al verificar email para usuario con ID {pk}: {str(e)}")
             return Response(
                 {"error": str(e)},
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR)
@@ -289,17 +378,25 @@ class UsuarioViewSet(viewsets.ViewSet):
     )
     def deactivate(self, request, pk=None):
         """Desactiva un usuario estableciendo el campo is_active en false."""
+        ip = obtener_ip(request)
         try:
+            logger.debug(f"Intentando desactivar usuario con ID: {pk}")
             UsuarioDAO.desactivar_usuario(pk)
+            logger_auditoria.info(
+                f"ip:{ip}] [accion: DESACTIVAR_USUARIO] "
+                f"[realizado_por:{request.user}] [id_afectado:{pk}]"
+            )
             return Response(
                 {"mensaje": "Usuario eliminado correctamente"},
                 status=status.HTTP_200_OK,
             )
 
         except UsuarioNoEncontrado_404 as e:
+            logger.warning(f"Usuario no encontrado con ID {pk}: {str(e)}")
             return Response({"error": str(e)}, status=status.HTTP_404_NOT_FOUND)
 
         except ValueError as e:
+            logger.warning(f"Error de validación al desactivar usuario con ID {pk}: {str(e)}")
             return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
     @action(detail=True, methods=["post"])
@@ -319,9 +416,11 @@ class UsuarioViewSet(viewsets.ViewSet):
         la contraseña actual y una nueva contraseña.
         """
         from django.core.exceptions import ValidationError
+        ip = obtener_ip(request)
         serializer = UsuarioContrasenaSerializer(data=request.data)
         if serializer.is_valid():
             try:
+                logger.debug(f"Intentando cambiar contraseña para usuario con ID: {pk}")
                 # Llama al método para actualizar la contraseña
                 UsuarioDAO.actualizar_contrasena(
                     pk,
@@ -329,15 +428,21 @@ class UsuarioViewSet(viewsets.ViewSet):
                     serializer.validated_data["new_password"],
                     serializer.validated_data["confirm_password"],
                 )
+                logger_auditoria.info(
+                    f"ip:{ip}] [accion: CAMBIAR_CONTRASENA] "
+                    f"[realizado_por:{request.user}] [id_afectado:{pk}]"
+                )
                 return Response(
                     {"mensaje": "Contraseña actualizada correctamente"},
                     status=status.HTTP_200_OK,
                 )
 
             except UsuarioNoEncontrado_404 as e:
+                logger.warning(f"Usuario no encontrado con ID {pk}: {str(e)}")
                 return Response({"error": str(e)}, status=status.HTTP_404_NOT_FOUND)
 
             except ValidationError as e:
+                logger.warning(f"Error de validación al cambiar contraseña para usuario con ID {pk}: {str(e)}")
                 return Response(
                     {"error": e.messages},
                     status=status.HTTP_400_BAD_REQUEST
@@ -359,6 +464,7 @@ class UsuarioViewSet(viewsets.ViewSet):
     )
     def request_password_reset(self, request):
         """Permite solicitar un restablecimiento de contraseña enviando un enlace o token al correo."""
+        ip = obtener_ip(request)
         serializer = PasswordResetRequestSerializer(data=request.data)
         if not serializer.is_valid():
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -366,14 +472,21 @@ class UsuarioViewSet(viewsets.ViewSet):
         email = serializer.validated_data["email"]
 
         try:
+            logger.debug(f"Solicitud de restablecimiento de contraseña para email: {email}")
             UsuarioDAO.reset_password_request(email)
+            logger_auditoria.info(
+                f"ip:{ip}] [accion: REQUEST_PASSWORD_RESET] "
+                f"[realizado_por:{request.user}] [email_afectado:{email}]"
+            )
             return Response(
                 {"mensaje": "Se ha enviado un enlace de restablecimiento a tu correo"},
                 status=status.HTTP_200_OK,
             )
 
         except UsuarioNoEncontrado_404 as e:
+            logger.warning(f"Usuario no encontrado para email {email}: {str(e)}")
             return Response({"error": str(e)}, status=status.HTTP_404_NOT_FOUND)
 
         except ValueError as e:
-            return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST) 
+            logger.warning(f"Error de validación al solicitar restablecimiento de contraseña para email {email}: {str(e)}")
+            return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
